@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Packaging output
+dist/
+
+# Logs & misc
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

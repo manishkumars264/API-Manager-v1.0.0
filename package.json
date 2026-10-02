@@ -1,0 +1,110 @@
+{
+  "name": "api-manager",
+  "productName": "API Manager",
+  "version": "1.0.0",
+  "description": "API Manager - a local-first, Postman-inspired desktop API client. Create, send, and organize API requests with environments, collections, scripts, and code generation. All data stays on your machine.",
+  "author": {
+    "name": "Manish Kumar Singh",
+    "email": "manishkumars264@gmail.com"
+  },
+  "license": "MIT",
+  "private": true,
+  "main": "main/main.js",
+  "homepage": "https://github.com/manishkumars264/API-Manager-v1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manishkumars264/API-Manager-v1.0.0.git"
+  },
+  "bugs": {
+    "url": "https://github.com/manishkumars264/API-Manager-v1.0.0/issues",
+    "email": "manishkumars264@gmail.com"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "http",
+    "client",
+    "postman",
+    "request",
+    "testing",
+    "electron",
+    "desktop"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dev:browser": "node dev-server.js",
+    "test": "node --test test/*.test.js",
+    "syntax": "node scripts/syntax-check.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux",
+    "dist:dir": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.manishkumarsingh.apimanager",
+    "productName": "API Manager",
+    "artifactName": "APIManager-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "buildResources"
+    },
+    "files": [
+      "main/**/*",
+      "shared/**/*",
+      "renderer/**/*",
+      "package.json",
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "APIManager-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "API Manager"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": false
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Development",
+      "synopsis": "Local-first desktop API client"
+    },
+    "deb": {
+      "section": "development"
+    }
+  }
+}

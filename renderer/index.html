@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'">
+<title>API Manager</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <!-- Tab bar -->
+  <div id="tabbar" role="tablist" aria-label="Open requests">
+    <div id="brand" title="API Manager">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 17l6-5-6-5M12 19h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>API&nbsp;Manager</span>
+    </div>
+    <div id="tab-list" class="tab-scroll"></div>
+    <button id="new-tab-btn" class="icon-btn" title="New request tab (Ctrl+T)" aria-label="New request tab">+</button>
+  </div>
+
+  <div id="main-row">
+    <!-- Sidebar -->
+    <aside id="sidebar" aria-label="Workspace">
+      <div class="side-search">
+        <input id="side-search" type="search" placeholder="Search requests and collections…" aria-label="Search workspace">
+      </div>
+
+      <section class="side-section" data-section="collections">
+        <header class="side-head">
+          <span class="side-title">Collections</span>
+          <div class="side-actions">
+            <button class="icon-btn" data-act="col:add" title="New collection" aria-label="New collection">＋</button>
+            <button class="icon-btn" data-act="col:import" title="Import Postman collection" aria-label="Import collection">⇩</button>
+            <button class="icon-btn" data-act="col:export" title="Export active collection" aria-label="Export collection">⇧</button>
+          </div>
+        </header>
+        <div class="side-body" id="col-tree"></div>
+      </section>
+
+      <section class="side-section" data-section="environments">
+        <header class="side-head">
+          <span class="side-title">Environments</span>
+          <div class="side-actions">
+            <button class="icon-btn" data-act="env:add" title="New environment" aria-label="New environment">＋</button>
+            <button class="icon-btn" data-act="env:import" title="Import Postman environment" aria-label="Import environment">⇩</button>
+            <button class="icon-btn" data-act="env:export" title="Export active environment" aria-label="Export environment">⇧</button>
+          </div>
+        </header>
+        <div class="side-body" id="env-list"></div>
+      </section>
+
+      <section class="side-section" data-section="globals">
+        <header class="side-head">
+          <span class="side-title">Globals</span>
+          <div class="side-actions">
+            <button class="icon-btn" data-act="globals:add" title="Add global variable" aria-label="Add global variable">＋</button>
+          </div>
+        </header>
+        <div class="side-body" id="globals-editor"></div>
+      </section>
+
+      <section class="side-section" data-section="history">
+        <header class="side-head">
+          <span class="side-title">History</span>
+          <div class="side-actions">
+            <button class="icon-btn" data-act="history:clear" title="Clear history" aria-label="Clear history">✕</button>
+          </div>
+        </header>
+        <div class="side-body" id="history-list"></div>
+      </section>
+
+      <div class="side-footer">
+        <select id="active-env-select" aria-label="Active environment"><option value="">No environment</option></select>
+        <button id="theme-toggle" class="icon-btn" title="Toggle light/dark theme" aria-label="Toggle theme">◐</button>
+      </div>
+    </aside>
+
+    <!-- Workspace -->
+    <main id="workspace">
+      <div id="empty-state">
+        <div class="empty-inner">
+          <svg width="54" height="54" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 17l6-5-6-5M12 19h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h1>API Manager</h1>
+          <p>Create a request tab to get started — or import a Postman collection, an environment, or a cURL command from the File menu.</p>
+          <div class="empty-actions">
+            <button class="btn primary" id="empty-new-tab">New request</button>
+            <button class="btn" id="empty-import">Import collection…</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="editor" class="hidden">
+        <div class="url-bar">
+          <select id="req-method" aria-label="HTTP method"></select>
+          <input id="req-url" type="text" placeholder="https://api.example.com/v1/users" spellcheck="false" aria-label="Request URL">
+          <button id="btn-send" class="btn primary">Send</button>
+          <button id="btn-save" class="btn" title="Save request to a collection">Save</button>
+          <button id="btn-code" class="btn" title="Generate code snippet (Ctrl+Shift+X)">Code</button>
+          <button id="btn-run-again" class="btn hidden" title="Send the request again">↻ Re-run</button>
+        </div>
+
+        <div class="req-grid">
+          <div class="req-panels" aria-label="Request settings">
+            <div class="panel-tabs" role="tablist">
+              <button role="tab" data-panel="params">Params</button>
+              <button role="tab" data-panel="auth">Auth</button>
+              <button role="tab" data-panel="headers">Headers</button>
+              <button role="tab" data-panel="body">Body</button>
+              <button role="tab" data-panel="scripts">Scripts</button>
+              <button role="tab" data-panel="settings">Settings</button>
+              <button role="tab" data-panel="vars">Variables</button>
+            </div>
+            <div class="panel-body">
+              <div class="panel-page" data-panelbody="params"></div>
+              <div class="panel-page" data-panelbody="auth"></div>
+              <div class="panel-page" data-panelbody="headers"></div>
+              <div class="panel-page" data-panelbody="body"></div>
+              <div class="panel-page" data-panelbody="scripts"></div>
+              <div class="panel-page" data-panelbody="settings"></div>
+              <div class="panel-page" data-panelbody="vars"></div>
+            </div>
+          </div>
+
+          <div class="resp-col" aria-label="Response">
+            <div id="response-pane">
+              <div class="resp-toolbar">
+                <span id="resp-status" class="chip none" role="status" aria-live="polite">No response yet</span>
+                <span id="resp-duration" class="resp-meta"></span>
+                <span id="resp-size" class="resp-meta"></span>
+                <div class="resp-tabs" role="tablist">
+                  <button role="tab" data-rtab="body">Body</button>
+                  <button role="tab" data-rtab="headers">Headers</button>
+                  <button role="tab" data-rtab="cookies">Cookies</button>
+                  <button role="tab" data-rtab="tests">Tests</button>
+                </div>
+                <div class="resp-actions">
+                  <div id="resp-view-switch" class="seg" aria-label="Body view">
+                    <button data-view="pretty" title="Pretty view">Pretty</button>
+                    <button data-view="raw" title="Raw view">Raw</button>
+                    <button data-view="html" title="HTML preview" class="hidden">HTML</button>
+                  </div>
+                  <button id="btn-wrap" class="icon-btn" title="Toggle word wrap" aria-label="Toggle word wrap">⏎</button>
+                  <button id="btn-zoom-out" class="icon-btn" title="Zoom out" aria-label="Zoom out">A−</button>
+                  <button id="btn-zoom-in" class="icon-btn" title="Zoom in" aria-label="Zoom in">A+</button>
+                  <button id="btn-copy-body" class="icon-btn" title="Copy body" aria-label="Copy body">⧉</button>
+                  <button id="btn-copy-full" class="icon-btn" title="Copy body with status line and headers" aria-label="Copy full response">⧉+</button>
+                  <button id="btn-download" class="icon-btn" title="Download body as .json" aria-label="Download body">↓</button>
+                </div>
+              </div>
+              <div id="resp-content"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Console drawer -->
+  <div id="console-drawer" class="hidden">
+    <div class="console-head">
+      <span class="side-title">Console</span>
+      <select id="console-filter" aria-label="Console filter">
+        <option value="all">All</option>
+        <option value="request">Requests</option>
+        <option value="script">Scripts</option>
+        <option value="warn">Warnings</option>
+        <option value="error">Errors</option>
+      </select>
+      <button class="icon-btn" id="console-clear" title="Clear console">✕</button>
+      <button class="icon-btn" id="console-close" title="Close console (Ctrl+Shift+U)">—</button>
+    </div>
+    <div id="console-list" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- Context menu -->
+<div id="context-menu" class="hidden" role="menu"></div>
+<!-- Modal root -->
+<div id="modal-root"></div>
+<!-- Toasts -->
+<div id="toasts" aria-live="polite"></div>
+
+<!-- Hidden file pickers -->
+<input type="file" id="file-collection" accept=".json,application/json" class="hidden" aria-hidden="true">
+<input type="file" id="file-environment" accept=".json,application/json" class="hidden" aria-hidden="true">
+<input type="file" id="file-backup" accept=".json,application/json" class="hidden" aria-hidden="true">
+
+<script src="shared/variables.js"></script>
+<script src="shared/collection.js"></script>
+<script src="shared/curl.js"></script>
+<script src="shared/soap.js"></script>
+<script src="shared/history.js"></script>
+<script src="shared/pmsubset.js"></script>
+<script src="shared/snippets.js"></script>
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
